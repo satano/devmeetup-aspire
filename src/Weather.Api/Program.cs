@@ -5,17 +5,21 @@ using Weather.Api.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+// Aspire service defaults: OpenTelemetry, health checks, service discovery, HttpClient resilience.
+builder.AddServiceDefaults();
+
 // Generates the OpenAPI document served at /openapi/v1.json (consumed by Scalar below).
 builder.Services.AddOpenApi();
 
-// Phase 0: connect to a Redis instance the developer started manually (see
-// appsettings.Development.json for the local connection). Keeping the connection fully external
-// means an Azure Cache for Redis connection string can be supplied per environment without any
-// code change. In Phase 1, Aspire replaces this registration with builder.AddRedisClient("cache").
-builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
-	ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("cache")!));
+// Phase 1: Aspire registers the Redis client (IConnectionMultiplexer) from the named "cache"
+// connection. The AppHost starts the Redis container and injects this connection string; running
+// the API standalone still works via the "cache" entry in appsettings.Development.json.
+builder.AddRedisClient("cache");
 
 WebApplication app = builder.Build();
+
+// Aspire default health endpoints (/health, /alive).
+app.MapDefaultEndpoints();
 
 // Interactive API explorer at /scalar (Development only).
 if (app.Environment.IsDevelopment())
