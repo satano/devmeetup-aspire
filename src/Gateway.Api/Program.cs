@@ -1,13 +1,20 @@
 ﻿WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Phase 0: routes and backend destinations are hardcoded in appsettings.json — including every
-// backend port. This brittleness (edit the gateway whenever a backend port changes) is exactly
-// what Aspire service discovery removes in Phase 1, where destinations become http://todo-api /
-// http://weather-api and no ports appear anywhere.
+// Aspire service defaults — importantly this turns on service discovery, which lets YARP resolve
+// logical destination names like http://weather-api (see appsettings.json) to real endpoints.
+builder.AddServiceDefaults();
+
+// Routes/clusters are still loaded from appsettings.json. AddServiceDiscoveryDestinationResolver()
+// makes YARP resolve a cluster's destination through service discovery, so the Weather destination
+// can be the name "http://weather-api" instead of a hardcoded port.
 builder.Services.AddReverseProxy()
-	.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddServiceDiscoveryDestinationResolver();
 
 WebApplication app = builder.Build();
+
+// Aspire default health endpoints (/health, /alive).
+app.MapDefaultEndpoints();
 
 app.MapReverseProxy();
 
