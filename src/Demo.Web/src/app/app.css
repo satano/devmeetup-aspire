@@ -1,0 +1,42 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #1f2937;
+  color: #fff;
+}
+
+.topbar h1 {
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.topbar nav a {
+  color: #cbd5e1;
+  text-decoration: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+}
+
+.topbar nav a:hover {
+  background: #374151;
+  color: #fff;
+}
+
+.topbar nav a.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+main {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}

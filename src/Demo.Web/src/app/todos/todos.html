@@ -1,0 +1,28 @@
+<section>
+  <h2>Todos</h2>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <div class="add">
+    <input #titleInput placeholder="New todo…" (keyup.enter)="add(titleInput)" />
+    <button (click)="add(titleInput)">Add</button>
+  </div>
+
+  @if (todos().length === 0) {
+    <p class="empty">No todos yet.</p>
+  } @else {
+    <ul class="list">
+      @for (item of todos(); track item.id) {
+        <li>
+          <label>
+            <input type="checkbox" [checked]="item.isDone" (change)="toggle(item)" />
+            <span [class.done]="item.isDone">{{ item.title }}</span>
+          </label>
+          <button class="del" (click)="remove(item)" aria-label="Delete">✕</button>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -1,0 +1,54 @@
+.search {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.search input {
+  flex: 1;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-head h3 {
+  margin: 0;
+}
+
+.temp {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0.5rem 0 0;
+}
+
+.summary {
+  margin: 0.25rem 0 0;
+  color: #4b5563;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+/* Highlight when the response was served from the Redis cache. */
+.badge.cached {
+  background: #dcfce7;
+  color: #15803d;
+}

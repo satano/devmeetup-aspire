@@ -1,0 +1,29 @@
+<section>
+  <h2>Weather</h2>
+
+  <div class="search">
+    <input
+      #cityInput
+      placeholder="City, e.g. Bratislava"
+      (keyup.enter)="search(cityInput.value)"
+    />
+    <button (click)="search(cityInput.value)" [disabled]="loading()">
+      {{ loading() ? 'Loading…' : 'Get forecast' }}
+    </button>
+  </div>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (forecast(); as f) {
+    <div class="card">
+      <div class="card-head">
+        <h3>{{ f.city }}</h3>
+        <span class="badge" [class.cached]="f.cached">{{ f.cached ? 'cached' : 'fresh' }}</span>
+      </div>
+      <p class="temp">{{ f.tempC }}°C</p>
+      <p class="summary">{{ f.summary }}</p>
+    </div>
+  }
+</section>
