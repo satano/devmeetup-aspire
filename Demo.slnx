@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Todo.Api/Todo.Api.csproj" />
+    <Project Path="src/Weather.Api/Weather.Api.csproj" />
   </Folder>
 </Solution>
