@@ -11,10 +11,12 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Weather.Api\Weather.Api.csproj" />
 		<ProjectReference Include="..\Gateway.Api\Gateway.Api.csproj" />
+		<ProjectReference Include="..\Todo.Api\Todo.Api.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Aspire.Hosting.Redis" Version="13.3.5" />
+		<PackageReference Include="Aspire.Hosting.SqlServer" Version="13.3.5" />
 	</ItemGroup>
 
 </Project>

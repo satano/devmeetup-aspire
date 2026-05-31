@@ -5,17 +5,29 @@ using Todo.Api.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+// Aspire service defaults: OpenTelemetry, health checks, service discovery, HttpClient resilience.
+builder.AddServiceDefaults();
+
 // Generates the OpenAPI document served at /openapi/v1.json (consumed by Scalar below).
 builder.Services.AddOpenApi();
 
-// Phase 0: connection string is read from configuration (see appsettings.Development.json
-// for local dev). Keeping it fully external means an Azure SQL connection string — including
-// one using a managed identity (Authentication=Active Directory Default) — can be supplied per
-// environment without any code change. Aspire will inject this named connection in Phase 1.
-builder.Services.AddDbContext<TodoDbContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("TodoDb")));
+// Phase 1: Aspire registers the EF Core DbContext from the named "tododb" connection. The AppHost
+// starts the SQL Server container and injects this connection string; running the API standalone
+// still works via the "tododb" entry in appsettings.Development.json.
+builder.AddSqlServerDbContext<TodoDbContext>("tododb");
 
 WebApplication app = builder.Build();
+
+// Aspire default health endpoints (/health, /alive).
+app.MapDefaultEndpoints();
+
+// Apply EF Core migrations on startup. Safe under Aspire because the AppHost gates this service
+// with WaitFor(tododb); standalone it runs against the local SQL Server (no-op if already current).
+using (IServiceScope scope = app.Services.CreateScope())
+{
+	TodoDbContext db = scope.ServiceProvider.GetRequiredService<TodoDbContext>();
+	await db.Database.MigrateAsync();
+}
 
 // Interactive API explorer at /scalar (Development only). Open it in the browser to
 // try the /todos endpoints without curl or Postman.

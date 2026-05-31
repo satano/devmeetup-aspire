@@ -1,18 +1,24 @@
-IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
+﻿IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
 // Aspire manages the Redis container and injects its connection into services that reference it.
 IResourceBuilder<RedisResource> cache = builder.AddRedis("cache");
 
-// Phase 1 — incremental: the Weather API and the Gateway are orchestrated by Aspire. The Gateway
-// reaches the Weather API by its service-discovery name (http://weather-api) instead of a hardcoded
-// port — WithReference(weatherApi) injects the discovery info. Todo.Api and the Angular frontend
-// stay on the manual Phase 0 path for now.
+// Aspire manages the SQL Server container and the "tododb" database, injecting the connection.
+IResourceBuilder<SqlServerServerResource> sql = builder.AddSqlServer("sql");
+IResourceBuilder<SqlServerDatabaseResource> todoDb = sql.AddDatabase("tododb");
+
 IResourceBuilder<ProjectResource> weatherApi = builder.AddProject<Projects.Weather_Api>("weather-api")
     .WithReference(cache)
     .WaitFor(cache);
 
+IResourceBuilder<ProjectResource> todoApi = builder.AddProject<Projects.Todo_Api>("todo-api")
+    .WithReference(todoDb)
+    .WaitFor(todoDb);
+
 builder.AddProject<Projects.Gateway_Api>("gateway")
     .WithReference(weatherApi)
-    .WaitFor(weatherApi);
+    .WithReference(todoApi)
+    .WaitFor(weatherApi)
+    .WaitFor(todoApi);
 
 builder.Build().Run();
