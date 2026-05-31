@@ -15,10 +15,21 @@ IResourceBuilder<ProjectResource> todoApi = builder.AddProject<Projects.Todo_Api
     .WithReference(todoDb)
     .WaitFor(todoDb);
 
-builder.AddProject<Projects.Gateway_Api>("gateway")
+// The Gateway reaches the backends by service-discovery name (http://weather-api, http://todo-api).
+IResourceBuilder<ProjectResource> gateway = builder.AddProject<Projects.Gateway_Api>("gateway")
     .WithReference(weatherApi)
     .WithReference(todoApi)
     .WaitFor(weatherApi)
     .WaitFor(todoApi);
+
+// The Angular SPA is orchestrated too. Aspire runs `npm run start`, injects the
+// gateway URL (GATEWAY_URL, consumed by proxy.conf.js) and the port to bind to (PORT, consumed by
+// aspire-serve.js), and exposes the dev server as an external endpoint you can open in the browser.
+builder.AddJavaScriptApp("web", "../Demo.Web", "start")
+    .WithReference(gateway)
+    .WithEnvironment("GATEWAY_URL", gateway.GetEndpoint("https"))
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints()
+    .WaitFor(gateway);
 
 builder.Build().Run();
